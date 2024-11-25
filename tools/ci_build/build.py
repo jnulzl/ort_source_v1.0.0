@@ -160,6 +160,7 @@ Use the individual flags to only run the specified stages.
                         default='Visual Studio 15 2017', help="Specify the generator that CMake invokes. This is only supported on Windows")
     parser.add_argument("--enable_multi_device_test", action='store_true', help="Test with multi-device. Mostly used for multi-device GPU")
     parser.add_argument("--use_dml", action='store_true', help="Build with DirectML.")
+    parser.add_argument("--install_prefix", type=str, default=None, help="bin,lib,include install prefix directory")
     return parser.parse_args()
 
 def resolve_executable_path(command_or_path):
@@ -173,7 +174,8 @@ def is_windows():
     return sys.platform.startswith("win")
 
 def is_ubuntu_1604():
-    return platform.linux_distribution()[0] == 'Ubuntu' and platform.linux_distribution()[1] == '16.04'
+    # return platform.linux_distribution()[0] == 'Ubuntu' and platform.linux_distribution()[1] == '16.04'
+    return False
 
 def get_config_build_dir(build_dir, config):
     # build directory per configuration
@@ -326,7 +328,7 @@ def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home
     cmake_args = [cmake_path, cmake_dir,
                  "-Donnxruntime_RUN_ONNX_TESTS=" + ("ON" if args.enable_onnx_tests else "OFF"),
                  "-Donnxruntime_GENERATE_TEST_REPORTS=ON",
-                 "-Donnxruntime_DEV_MODE=" + ("OFF" if args.android else "ON"),
+                 "-Donnxruntime_DEV_MODE=" + ("OFF" if args.android else "OFF"),
                  "-DPYTHON_EXECUTABLE=" + sys.executable,
                  "-Donnxruntime_USE_CUDA=" + ("ON" if args.use_cuda else "OFF"),
                  "-Donnxruntime_USE_NSYNC=" + ("OFF" if is_windows() or not args.use_nsync else "ON"),
@@ -374,6 +376,7 @@ def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home
                  # enable pyop if it is nightly build
                  "-Donnxruntime_ENABLE_LANGUAGE_INTEROP_OPS=" + ("ON" if args.enable_language_interop_ops or (args.config != 'Debug' and bool(os.getenv('NIGHTLY_BUILD') == '1')) else "OFF"),
                  "-Donnxruntime_USE_DML=" + ("ON" if args.use_dml else "OFF"),
+                 "-DCMAKE_INSTALL_PREFIX=" + ("%s"%("/usr/local" if args.install_prefix is None else args.install_prefix)),
                  ]
     if args.use_brainslice:
         bs_pkg_name = args.brain_slice_package_name.split('.', 1)
