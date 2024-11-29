@@ -1,3 +1,18 @@
+# Onnxruntime source annotated based v1.0.0
+
+## Depends
+
+- OS : Ubuntu 20.04
+
+## Build
+
+```shell
+# After Builded, opened it by clion
+>>./build.sh --config Release --build_shared_lib --parallel --skip_submodule_sync --install_prefix install
+```
+
+
+
 <p align="center"><img width="50%" src="docs/images/ONNX_Runtime_logo_dark.png" /></p>
 
 [![Build Status](https://dev.azure.com/onnxruntime/onnxruntime/_apis/build/status/Windows%20CPU%20CI%20Pipeline?label=Windows+CPU)](https://dev.azure.com/onnxruntime/onnxruntime/_build/latest?definitionId=9)
